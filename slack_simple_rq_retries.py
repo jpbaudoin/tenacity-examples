@@ -6,6 +6,7 @@ from tenacity import retry, stop_after_attempt, before_log, wait_exponential
 import logging
 import sys
 
+# Setting up the logger to use on the retry config
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,7 @@ msg = dict(
     text="This is a simple text"
 )
 
+# Decorator with the retry policy
 @retry(stop=stop_after_attempt(4), before=before_log(logger, logging.DEBUG),
        wait=wait_exponential(multiplier=1, min=4, max=10))
 def send_msg_slack(web_hook_url, channel, msg):

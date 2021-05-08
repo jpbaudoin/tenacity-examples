@@ -70,3 +70,14 @@ try:
     print(response)
 except Exception as err:
     print(str(err))
+
+# Run test mocking error 429
+print("\nForce failure erro 429 mock")
+web_hook_url = slack_cfg['slack_mock429']
+web_hook_ch = "#NA"
+
+try:
+    response = send_msg_slack(web_hook_url, web_hook_ch, msg)
+    print(response)
+except Exception as err:
+    print(str(err))
