@@ -1,0 +1,63 @@
+{
+  "mappings" : [ {
+    "id" : "9221c1d8-b9b3-49e1-bdef-0dc9588faf23",
+    "name" : "Slack429",
+    "request" : {
+      "url" : "/err429",
+      "method" : "POST"
+    },
+    "response" : {
+      "status" : 429,
+      "body" : "Too Many Requests",
+      "headers" : {
+        "Retry-After" : "3",
+        "Content-Type" : "application/json"
+      }
+    },
+    "uuid" : "9221c1d8-b9b3-49e1-bdef-0dc9588faf23",
+    "persistent" : true,
+    "priority" : 5,
+    "metadata" : {
+      "mocklab" : {
+        "created" : {
+          "at" : "2021-05-05T02:09:44.752Z",
+          "via" : "ADMIN_API",
+          "by" : "mg77e"
+        },
+        "updated" : {
+          "at" : "2021-05-05T02:10:29.863Z",
+          "via" : "ADMIN_API",
+          "by" : "mg77e"
+        }
+      }
+    }
+  }, {
+    "id" : "f20e22f9-6222-4b5f-a65b-e9b36c99bc09",
+    "name" : "Slack500",
+    "request" : {
+      "url" : "/err500",
+      "method" : "POST"
+    },
+    "response" : {
+      "status" : 500,
+      "body" : "rollup_error",
+      "headers" : {
+        "Content-Type" : "application/json; charset=UTF-8"
+      }
+    },
+    "uuid" : "f20e22f9-6222-4b5f-a65b-e9b36c99bc09",
+    "persistent" : true,
+    "priority" : 5,
+    "metadata" : {
+      "mocklab" : {
+        "created" : {
+          "at" : "2021-05-05T02:03:28.652Z",
+          "via" : "SYSTEM"
+        }
+      }
+    }
+  } ],
+  "meta" : {
+    "total" : 2
+  }
+}
