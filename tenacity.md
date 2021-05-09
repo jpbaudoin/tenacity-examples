@@ -123,7 +123,7 @@ Let's explain each of the settings:
 
 Below we can see the code including the changes to implement this policy.
 
-[slack_simple_rq_retries.py](./slack_simple_rq_retries.py)
+[slack_retries_v1.py](./slack_retries_v1.py)
 ```python
 import json
 import requests
@@ -191,43 +191,43 @@ except Exception as err:
 If we execute the code we get:
 
 ```log
-python3 slack_simple_rq_retries.py
+python3 slack_retries_v1.py
 
 Testing Webhook
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): hooks.slack.com:443
-DEBUG:urllib3.connectionpool:https://hooks.slack.com:443 "POST /services/my-slack-webhook HTTP/1.1" 200 22
+2021-05-08 21:12:04,415 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
+2021-05-08 21:12:04,522 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 21:12:05,134 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 200 22
 ok
 
 Force failure using a non-existing channel
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): hooks.slack.com:443
-DEBUG:urllib3.connectionpool:https://hooks.slack.com:443 "POST /services/my-slack-webhook HTTP/1.1" 404 None
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 2nd time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): hooks.slack.com:443
-DEBUG:urllib3.connectionpool:https://hooks.slack.com:443 "POST /services/my-slack-webhook HTTP/1.1" 404 None
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 3rd time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): hooks.slack.com:443
-DEBUG:urllib3.connectionpool:https://hooks.slack.com:443 "POST /services/my-slack-webhook HTTP/1.1" 404 None
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 4th time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): hooks.slack.com:443
-DEBUG:urllib3.connectionpool:https://hooks.slack.com:443 "POST /services/my-slack-webhook HTTP/1.1" 404 None
-RetryError[<Future at 0x10621d1f0 state=finished raised HTTPError>]
+2021-05-08 21:12:05,136 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
+2021-05-08 21:12:05,140 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 21:12:05,617 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 404 None
+2021-05-08 21:12:06,622 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 2nd time calling it.
+2021-05-08 21:12:06,625 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 21:12:07,439 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 404 None
+2021-05-08 21:12:09,443 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 3rd time calling it.
+2021-05-08 21:12:09,445 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 21:12:09,914 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 404 None
+2021-05-08 21:12:13,920 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 4th time calling it.
+2021-05-08 21:12:13,923 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 21:12:14,388 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 404 None
+RetryError[<Future at 0x101c4b1f0 state=finished raised HTTPError>]
 
 Force failure erro 5XX mock
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): b4d.mocklab.io:80
-DEBUG:urllib3.connectionpool:http://XXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 2nd time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): b4d.mocklab.io:80
-DEBUG:urllib3.connectionpool:http://XXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 3rd time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): b4d.mocklab.io:80
-DEBUG:urllib3.connectionpool:http://XXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 4th time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): b4d.mocklab.io:80
-DEBUG:urllib3.connectionpool:http://XXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
-RetryError[<Future at 0x1062bc4f0 state=finished raised HTTPError>]
+2021-05-08 21:12:14,391 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
+2021-05-08 21:12:14,964 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:12:15,334 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 21:12:16,340 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 2nd time calling it.
+2021-05-08 21:12:16,343 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:12:16,746 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 21:12:18,750 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 3rd time calling it.
+2021-05-08 21:12:18,753 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:12:19,122 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 21:12:23,129 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 4th time calling it.
+2021-05-08 21:12:23,132 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:12:23,510 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+RetryError[<Future at 0x101cea4f0 state=finished raised HTTPError>]
 ```
 
 In terms of results from the calls we can see that the same behavior occurred, but now we can also appreciate the retries for the error cases, 4 attempts for the error 404, and the same for the 500 error.
@@ -271,49 +271,236 @@ def send_msg_slack(web_hook_url, channel, msg):
         msg_rq.raise_for_status()
     return response
 ```
-
+Let's check the result of the execution of this new version:
 ```log
 python3 slack_retries_v2.py
 
 Testing Webhook
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): hooks.slack.com:443
-DEBUG:urllib3.connectionpool:https://hooks.slack.com:443 "POST /services/my-slack-webhook HTTP/1.1" 200 22
+2021-05-08 21:17:04,377 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
+2021-05-08 21:17:04,484 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 21:17:04,978 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 200 22
 ok
 
 Force failure using a non-existing channel
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): hooks.slack.com:443
-DEBUG:urllib3.connectionpool:https://hooks.slack.com:443 "POST /services/my-slack-webhook HTTP/1.1" 404 None
-404 Client Error: Not Found for url: https://hooks.slack.com/services/my-slack-webhook
+2021-05-08 21:17:04,982 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
+2021-05-08 21:17:04,985 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 21:17:05,600 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 404 None
+404 Client Error: Not Found for url: https://hooks.slack.com/services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 Force failure erro 5XX mock
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): b4d.mocklab.io:80
-DEBUG:urllib3.connectionpool:http://XXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 2nd time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): b4d.mocklab.io:80
-DEBUG:urllib3.connectionpool:http://XXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 3rd time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): b4d.mocklab.io:80
-DEBUG:urllib3.connectionpool:http://XXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 4th time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): b4d.mocklab.io:80
-DEBUG:urllib3.connectionpool:http://XXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
-RetryError[<Future at 0x10f97dbb0 state=finished raised SendMsgError>]
+2021-05-08 21:17:05,602 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
+2021-05-08 21:17:05,605 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:06,069 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 21:17:07,075 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 2nd time calling it.
+2021-05-08 21:17:07,078 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:07,447 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 21:17:09,450 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 3rd time calling it.
+2021-05-08 21:17:09,453 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:09,920 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 21:17:13,926 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 4th time calling it.
+2021-05-08 21:17:13,929 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:14,310 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+RetryError[<Future at 0x103bf5bb0 state=finished raised SendMsgError>]
 
 Force failure erro 429 mock
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): b4d.mocklab.io:80
-DEBUG:urllib3.connectionpool:http://XXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 2nd time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): b4d.mocklab.io:80
-DEBUG:urllib3.connectionpool:http://XXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 3rd time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): b4d.mocklab.io:80
-DEBUG:urllib3.connectionpool:http://XXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
-DEBUG:__main__:Starting call to '__main__.send_msg_slack', this is the 4th time calling it.
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): b4d.mocklab.io:80
-DEBUG:urllib3.connectionpool:http://XXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
-RetryError[<Future at 0x10fab2640 state=finished raised SendMsgError>]
+2021-05-08 21:17:14,311 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
+2021-05-08 21:17:14,314 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:14,684 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
+2021-05-08 21:17:15,690 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 2nd time calling it.
+2021-05-08 21:17:15,692 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:16,057 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
+2021-05-08 21:17:18,060 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 3rd time calling it.
+2021-05-08 21:17:18,063 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:18,442 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
+2021-05-08 21:17:22,447 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 4th time calling it.
+2021-05-08 21:17:22,450 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:22,824 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
+RetryError[<Future at 0x103d29640 state=finished raised SendMsgError>]
 ```
+
+In comparison to the previos results we now see that we have a different behavior for error 404 and 500. In the case of 404 error we have only one call as in this case no retry is requiered. 
+
+We also included a test with a 429 status mock. Similar to the 500 mock we can see the retries. Even if we are doing retries for this type of error, our solution is not complete. According to Slack [documentation](https://api.slack.com/docs/rate-limits#rate-limits__responding-to-rate-limiting-conditions), 429 error response includes a header that indicates the period of backoff that we need to honor and we are not taking that info into account in our retry policy.
+
+### Include external input into retries
+
+Slack 429 response includes the Retry-After header with the number of seconds that we need to wait to run the next request. With this in mind, the new retry policy shall:
+- Maintain the default policy backoff times for cases on wich the response does not precribe a backoff time.
+- Implment a mechanimism to read and use the backoff time provided by the API.
+- Keep the same number of retries as before.
+
+The proposed solution uses tenacity capacity for [custom callbacks](https://tenacity.readthedocs.io/en/latest/#other-custom-callbacks). For our needs we generate a function that returns the wait time as specified by the Slack Response, this function will be used on the [wait hook](https://tenacity.readthedocs.io/en/latest/#waiting-before-retrying) provided by tenacity. 
+
+We still need to solve how to pass the wait time from the *send_msg_slack* to tenacity. In tenacity, any custom callback receives as parameter the [RetryState](https://tenacity.readthedocs.io/en/latest/#retrycallstate). With the RetryState we could access the function being wrapped by the retry call and the parameters of the function. With this we tried to use [function attributes](https://www.python.org/dev/peps/pep-0232/), but unfortunatelly this aproach didn't work, so we resorted to use classes in order to pass information between tenacity and the retry function.
+
+The new version of the code can be found at: [slack_retries_v3.py](./slack_retries_v3.py)
+```python
+from datetime import datetime
+from config import slack_cfg
+from tenacity import retry, stop_after_attempt, before_log, wait_exponential, retry_if_exception_type
+import time
+import requests
+import json
+import sys
+
+import logging
+
+logging.basicConfig(format='%(asctime)s :: %(levelname)s :: %(message)s',
+                    stream=sys.stderr, level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+def custom_wait(retry_state):
+    func_object = retry_state.args[0]               # Get the class object
+    func_name = retry_state.fn.__name__             # Get the retried function name
+    wait = func_object.wait.get(func_name, None)    # Get the wait time form the wait dict on the object
+    if wait is None:
+        # No wait time then default to the default retry policy
+        return default_wait(retry_state)
+    else:
+        # Clean the wait time and retun the wait value
+        func_object.wait[func_name] = None
+        return wait
+
+def default_wait(retry_state):
+    return wait_exponential(multiplier=1, min=4, max=10)(retry_state)
+    
+class SendMsgError(Exception):
+    pass
+
+## Prepare the slack message
+msg = dict(
+    icon_emoji=":smile:",
+    username="PythonProcess",
+    text="This is a simple text"
+)
+
+# Slack messages posting code refactored as a class
+class SlackPub():
+    def __init__(self, whook_url, channel):
+        self.whook_url = whook_url
+        self.channel = channel
+        self.wait = dict()                  # A dict to store the wait times
+        self.wait['send_msg_slack'] = None
+
+
+    @retry(stop=stop_after_attempt(4), before=before_log(logger, logging.DEBUG),
+           wait=custom_wait,
+           retry=retry_if_exception_type(SendMsgError))
+    def send_msg_slack(self, msg):
+        msg["channel"] = "#{channel}".format(channel=self.channel)
+        msg_rq = requests.post(url=self.whook_url, json=msg, headers={
+            'Content-Type': 'application/json'})
+        response = msg_rq.text
+
+        if msg_rq.status_code == 200:
+            return response
+        elif msg_rq.status_code == 429:
+            # Retry
+            retry_after = msg_rq.headers.get("Retry-After", None)
+            if retry_after is not None:
+                self.wait['send_msg_slack'] = int(retry_after)
+            raise SendMsgError("{msg} - {status}".format(msg=response, status= msg_rq.status_code))
+        elif msg_rq.status_code >= 500:
+            # Retry
+            raise SendMsgError("{msg} - {status}".format(msg=response, status= msg_rq.status_code))
+        else:
+            # Fail with no retries
+            msg_rq.raise_for_status()
+        return response
+
+
+# Test the webhook
+print("\nTesting Webhook")
+web_hook_url = slack_cfg['slack_webhook']['url']
+web_hook_ch = slack_cfg['slack_webhook']['channel']
+slack_cli = SlackPub(web_hook_url, web_hook_ch)
+
+response = slack_cli.send_msg_slack(msg)
+print(response)
+
+# Force failure using a non-existing channel
+print("\nForce failure using a non-existing channel")
+web_hook_url = slack_cfg['slack_webhook']['url']
+web_hook_ch = "#NA"
+slack_cli = SlackPub(web_hook_url, web_hook_ch)
+
+try:
+    response = slack_cli.send_msg_slack(msg)
+    print(response)
+except Exception as err:
+    print(str(err))
+
+
+# Run test mocking error 500
+print("\nForce failure erro 5XX mock")
+web_hook_url = slack_cfg['slack_mock5XX']
+web_hook_ch = "#NA"
+slack_cli = SlackPub(web_hook_url, web_hook_ch)
+
+try:
+    response = slack_cli.send_msg_slack(msg)
+    print(response)
+except Exception as err:
+    print(str(err))
+
+# Run test mocking error 429
+print("\nForce failure erro 429 mock")
+web_hook_url = slack_cfg['slack_mock429']
+web_hook_ch = "#NA"
+slack_cli = SlackPub(web_hook_url, web_hook_ch)
+
+try:
+    response = slack_cli.send_msg_slack(msg)
+    print(response)
+except Exception as err:
+    print(str(err))
+````
+
+Now we will see the results of this changes:
+```log
+python3 slack_retries_v3.py
+
+Testing Webhook
+2021-05-08 21:42:12,235 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 1st time calling it.
+2021-05-08 21:42:12,411 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 21:42:12,955 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 200 22
+ok
+
+Force failure using a non-existing channel
+2021-05-08 21:42:12,958 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 1st time calling it.
+2021-05-08 21:42:12,961 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 21:42:13,427 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 404 None
+404 Client Error: Not Found for url: https://hooks.slack.com/services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+Force failure erro 5XX mock
+2021-05-08 21:42:13,430 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 1st time calling it.
+2021-05-08 21:42:13,979 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:42:14,371 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 21:42:18,376 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 2nd time calling it.
+2021-05-08 21:42:18,379 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:42:18,753 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 21:42:22,756 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 3rd time calling it.
+2021-05-08 21:42:22,759 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:42:23,131 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 21:42:27,132 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 4th time calling it.
+2021-05-08 21:42:27,134 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:42:27,507 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+RetryError[<Future at 0x107202e20 state=finished raised SendMsgError>]
+
+Force failure erro 429 mock
+2021-05-08 21:42:27,507 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 1st time calling it.
+2021-05-08 21:42:27,511 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:42:27,883 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
+2021-05-08 21:42:30,888 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 2nd time calling it.
+2021-05-08 21:42:30,891 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:42:31,267 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
+2021-05-08 21:42:34,272 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 3rd time calling it.
+2021-05-08 21:42:34,275 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:42:34,655 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
+2021-05-08 21:42:37,657 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 4th time calling it.
+2021-05-08 21:42:37,660 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:42:38,053 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
+RetryError[<Future at 0x107327eb0 state=finished raised SendMsgError>]
+```
+
+The first two test worked as expected, the important part in this case is the difference in the times from the 500 error retries vs the times in the 429 ones.
