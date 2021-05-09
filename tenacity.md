@@ -501,16 +501,16 @@ Force failure erro 429 mock
 RetryError[<Future at 0x10b2aeeb0 state=finished raised SendMsgError>]
 ```
 
-The first two tests worked as expected, the important part, in this case, is the difference in the times from the 500 error retries vs the times in the 429 ones.
+The first two tests worked as expected and add no new info to this case. The important part is the difference in the times from the 500 error retries compared to the times in the 429 error calls.
 
-Wait times for each retry:
+The following tables show a comparison of those times for each retry:
 | Attempt        | Err 500   | Err 429  |
 |:-------------:| :-----:   | :---:     |
 | 2             | 1         | 3         |
 | 3             | 2         | 3         |
 | 4             | 4         | 3         |
 
-As we see in the results, now the times for 429 errors are fixed in 3 secs, which is the value returned by the 429 mock URL which is the result we wanted.
+As we see in the results, now the times for 429 errors are fixed in 3 secs, which is the value returned by the 429 mock URL and thus the result we expected.
 
 # Conclusion
 
