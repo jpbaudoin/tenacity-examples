@@ -25,7 +25,7 @@ def custom_wait(retry_state):
         return wait
 
 def default_wait(retry_state):
-    return wait_exponential(multiplier=1, min=4, max=10)(retry_state)
+    return wait_exponential(multiplier=1, min=0, max=10)(retry_state)
     
 class SendMsgError(Exception):
     pass

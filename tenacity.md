@@ -1,11 +1,9 @@
-# Handling transient errors for web APIs and AWS calls in python
+# Handling transient errors for web APIs in python
 
 Nowadays, consuming external services via APIs or by using wapper libraries is pretty common.
 In this context distinguish between temporal issues(throttling, service unavailable) and non-recoverable ones is important as we can establish a retry policy for the former and handle the latter.
 
-We will explore how to handle these errors for two scenarios:
-- HTTP request to an API using slack webhooks as an example.
-- Use an external service library using boto3.
+We will explore how to handle these errors for HTTP request to slack webhooks API as an example.
 
 To implement the retries we will use the python library [*tenacity*](https://github.com/jd/tenacity).
 
@@ -22,7 +20,7 @@ Additionally, tenacity is an active project:
 - Several releases per year.
 - Currently on version 7, released this year.
 
-## Case #1: Posting messages to Slack webhook
+## Case: Posting messages to Slack webhook
 
 Below a simple code snippet to post a basic message on a slack channel via a webhook.
 
@@ -461,46 +459,56 @@ Now we will see the results of this changes:
 python3 slack_retries_v3.py
 
 Testing Webhook
-2021-05-08 21:42:12,235 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 1st time calling it.
-2021-05-08 21:42:12,411 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
-2021-05-08 21:42:12,955 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 200 22
+2021-05-08 23:15:27,417 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 1st time calling it.
+2021-05-08 23:15:27,530 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 23:15:28,070 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 200 22
 ok
 
 Force failure using a non-existing channel
-2021-05-08 21:42:12,958 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 1st time calling it.
-2021-05-08 21:42:12,961 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
-2021-05-08 21:42:13,427 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 404 None
+2021-05-08 23:15:28,073 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 1st time calling it.
+2021-05-08 23:15:28,078 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 23:15:28,656 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 404 None
 404 Client Error: Not Found for url: https://hooks.slack.com/services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 Force failure erro 5XX mock
-2021-05-08 21:42:13,430 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 1st time calling it.
-2021-05-08 21:42:13,979 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
-2021-05-08 21:42:14,371 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
-2021-05-08 21:42:18,376 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 2nd time calling it.
-2021-05-08 21:42:18,379 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
-2021-05-08 21:42:18,753 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
-2021-05-08 21:42:22,756 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 3rd time calling it.
-2021-05-08 21:42:22,759 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
-2021-05-08 21:42:23,131 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
-2021-05-08 21:42:27,132 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 4th time calling it.
-2021-05-08 21:42:27,134 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
-2021-05-08 21:42:27,507 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
-RetryError[<Future at 0x107202e20 state=finished raised SendMsgError>]
+2021-05-08 23:15:28,659 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 1st time calling it.
+2021-05-08 23:15:29,276 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:29,920 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 23:15:30,925 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 2nd time calling it.
+2021-05-08 23:15:30,928 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:31,303 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 23:15:33,308 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 3rd time calling it.
+2021-05-08 23:15:33,320 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:33,698 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 23:15:37,701 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 4th time calling it.
+2021-05-08 23:15:37,705 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:38,080 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+RetryError[<Future at 0x10b188e20 state=finished raised SendMsgError>]
 
 Force failure erro 429 mock
-2021-05-08 21:42:27,507 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 1st time calling it.
-2021-05-08 21:42:27,511 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
-2021-05-08 21:42:27,883 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
-2021-05-08 21:42:30,888 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 2nd time calling it.
-2021-05-08 21:42:30,891 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
-2021-05-08 21:42:31,267 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
-2021-05-08 21:42:34,272 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 3rd time calling it.
-2021-05-08 21:42:34,275 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
-2021-05-08 21:42:34,655 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
-2021-05-08 21:42:37,657 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 4th time calling it.
-2021-05-08 21:42:37,660 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
-2021-05-08 21:42:38,053 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
-RetryError[<Future at 0x107327eb0 state=finished raised SendMsgError>]
+2021-05-08 23:15:38,081 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 1st time calling it.
+2021-05-08 23:15:38,084 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:38,451 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
+2021-05-08 23:15:41,453 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 2nd time calling it.
+2021-05-08 23:15:41,456 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:41,829 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
+2021-05-08 23:15:44,835 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 3rd time calling it.
+2021-05-08 23:15:44,837 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:45,221 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
+2021-05-08 23:15:48,222 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 4th time calling it.
+2021-05-08 23:15:48,225 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:48,598 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
+RetryError[<Future at 0x10b2aeeb0 state=finished raised SendMsgError>]
 ```
 
 The first two test worked as expected, the important part in this case is the difference in the times from the 500 error retries vs the times in the 429 ones.
+
+Wait times for each retry:
+| Attemp        | Err 500   | Err 429  |
+|:-------------:| :-----:   | :---:     |
+| 2             | 1         | 3         |
+| 3             | 2         | 3         |
+| 4             | 4         | 3         |
+
+As we see in the results, now the times for 429 erros is fixed on 3 secs, which is the value returned by the 429 mock url.
+
