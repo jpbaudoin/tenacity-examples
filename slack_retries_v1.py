@@ -7,8 +7,10 @@ import logging
 import sys
 
 # Setting up the logger to use on the retry config
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s :: %(levelname)s :: %(message)s',
+                    stream=sys.stderr, level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
 
 
 ## Prepare the slack message
@@ -20,7 +22,7 @@ msg = dict(
 
 # Decorator with the retry policy
 @retry(stop=stop_after_attempt(4), before=before_log(logger, logging.DEBUG),
-       wait=wait_exponential(multiplier=1, min=4, max=10))
+       wait=wait_exponential(multiplier=1, min=0, max=10))
 def send_msg_slack(web_hook_url, channel, msg):
     msg["channel"] = "#{channel}".format(channel=channel)
     msg_rq = requests.post(url=web_hook_url, json=msg, headers={

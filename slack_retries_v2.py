@@ -6,7 +6,8 @@ from tenacity import retry, stop_after_attempt, before_log, wait_exponential, re
 import logging
 import sys
 
-logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+logging.basicConfig(format='%(asctime)s :: %(levelname)s :: %(message)s',
+                    stream=sys.stderr, level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -21,7 +22,7 @@ msg = dict(
 )
 
 @retry(stop=stop_after_attempt(4), before=before_log(logger, logging.DEBUG),
-       wait=wait_exponential(multiplier=1, min=4, max=10),
+       wait=wait_exponential(multiplier=1, min=0, max=10),
        retry=retry_if_exception_type(SendMsgError))
 def send_msg_slack(web_hook_url, channel, msg):
     msg["channel"] = "#{channel}".format(channel=channel)
