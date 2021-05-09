@@ -100,6 +100,133 @@ We can observe that all requests worked as designed:
 
 ### Add retries - dummy aproach
 
+The "simplest" retry mechanism is to include our code within a loop and control the retries and establish a sleep time before each call. Below a sample code with this approach:
+
+[slack_retries_v0.py](./slack_retries_v0.py)
+```python
+
+import json
+import requests
+from config import slack_cfg
+import logging
+import time
+import logging
+import sys
+
+# Setting up the logger to use on the retry config
+logging.basicConfig(format='%(asctime)s :: %(levelname)s :: %(message)s',
+                    stream=sys.stderr, level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
+## Prepare the slack message
+msg = dict(
+    icon_emoji=":smile:",
+    username="PythonProcess",
+    text="This is a simple text"
+)
+
+TOTAL_ATTEMPS = 4
+SLEEP = 1
+
+def send_msg_slack(web_hook_url, channel, msg):
+    attemp = 1
+    while attemp <= TOTAL_ATTEMPS:
+        logger.debug("Message attepmt: {attemp}".format(attemp=attemp))
+        msg["channel"] = "#{channel}".format(channel=channel)
+        msg_rq = requests.post(url=web_hook_url, json=msg, headers={
+            'Content-Type': 'application/json'})
+        response = msg_rq.text
+        try:
+            msg_rq.raise_for_status()
+        except:
+            attemp += 1
+            time.sleep(SLEEP)
+        else:
+            return response
+    # All retries failed
+    # Raise last error
+    msg_rq.raise_for_status()
+
+
+# Test the webhook
+print("\nTesting Webhook")
+web_hook_url = slack_cfg['slack_webhook']['url']
+web_hook_ch = slack_cfg['slack_webhook']['channel']
+
+response = send_msg_slack(web_hook_url, web_hook_ch, msg)
+print(response)
+
+# Force failure using a non-existing channel
+print("\nForce failure using a non-existing channel")
+web_hook_url = slack_cfg['slack_webhook']['url']
+web_hook_ch = "#NA"
+
+try:
+    response = send_msg_slack(web_hook_url, web_hook_ch, msg)
+    print(response)
+except Exception as err:
+    print(str(err))
+
+
+# Run test mocking error 500
+print("\nForce failure erro 5XX mock")
+web_hook_url = slack_cfg['slack_mock5XX']
+web_hook_ch = "#NA"
+
+try:
+    response = send_msg_slack(web_hook_url, web_hook_ch, msg)
+    print(response)
+except Exception as err:
+    print(str(err))
+```
+
+This code acomplishes what we wanted as we can see on the following results:
+```log
+python3 slack_retries_v0.py 
+
+Testing Webhook
+2021-05-08 21:08:03,652 :: DEBUG :: Message attepmt: 1
+2021-05-08 21:08:03,764 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 21:08:04,268 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 200 22
+ok
+
+Force failure using a non-existing channel
+2021-05-08 21:08:04,272 :: DEBUG :: Message attepmt: 1
+2021-05-08 21:08:04,276 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 21:08:04,842 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 404 None
+2021-05-08 21:08:05,846 :: DEBUG :: Message attepmt: 2
+2021-05-08 21:08:05,848 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 21:08:06,378 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 404 None
+2021-05-08 21:08:07,380 :: DEBUG :: Message attepmt: 3
+2021-05-08 21:08:07,383 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 21:08:07,914 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 404 None
+2021-05-08 21:08:08,917 :: DEBUG :: Message attepmt: 4
+2021-05-08 21:08:08,920 :: DEBUG :: Starting new HTTPS connection (1): hooks.slack.com:443
+2021-05-08 21:08:09,395 :: DEBUG :: https://hooks.slack.com:443 "POST /services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX HTTP/1.1" 404 None
+404 Client Error: Not Found for url: https://hooks.slack.com/services/XXXXXXXXXX/XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+Force failure erro 5XX mock
+2021-05-08 21:08:10,401 :: DEBUG :: Message attepmt: 1
+2021-05-08 21:08:10,404 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:08:10,771 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 21:08:11,773 :: DEBUG :: Message attepmt: 2
+2021-05-08 21:08:11,776 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:08:12,138 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 21:08:13,140 :: DEBUG :: Message attepmt: 3
+2021-05-08 21:08:13,143 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:08:13,519 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+2021-05-08 21:08:14,524 :: DEBUG :: Message attepmt: 4
+2021-05-08 21:08:14,526 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:08:14,900 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
+500 Server Error: Server Error for url: http://b4d.mocklab.io/err500
+```
+
+There are some caveats(our humble opinion) with this approach that make it not desirable if we can use a library such as tenacity:
+- It incorporates retrying logic into the logic of our code.
+- The code is less readable and difficult to maintain.
+- It is not flexible in terms of the definition of retries policies.
+
+Let's see how we can use tenacity to implement this behavior in a cleaner and effective manner.
 
 ### Add retries - basic aproach
 Here we will define a retrying policy and apply it to the *send_msg_slack* function.
