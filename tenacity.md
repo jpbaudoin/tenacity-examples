@@ -3,7 +3,7 @@
 Nowadays, consuming external services via APIs or by using wapper libraries is pretty common.
 In this context distinguish between temporal issues(throttling, service unavailable) and non-recoverable ones is important as we can establish a retry policy for the former and handle the latter.
 
-We will explore how to handle these errors for HTTP request to slack webhooks API as an example.
+We will explore how to handle these errors for HTTP requests using calls to slack webhooks API as an example.
 
 To implement the retries we will use the python library [*tenacity*](https://github.com/jd/tenacity).
 
@@ -116,8 +116,8 @@ One of the mechanisims to implement a retry scheme in tenacity is by using a dec
 ````
 Let's explain each of the settings:
 - [stop](https://tenacity.readthedocs.io/en/latest/index.html#stopping): Defines the stop condition for retries, in this case at most 4 attempts.
-- [before](https://tenacity.readthedocs.io/en/latest/index.html#before-and-after-retry-and-logging): Defines a function to run before each retry, in this case we use tenacity before_log function to send information about the retry to a logger.
-- [wait](https://tenacity.readthedocs.io/en/latest/index.html#waiting-before-retrying): Defines the waiting period between retries, in our case we use the wait_exponential to implement an exponetial backoff
+- [before](https://tenacity.readthedocs.io/en/latest/index.html#before-and-after-retry-and-logging): Defines a function to run before each retry, in this case, we use tenacity's before_log function to send information about the retry to a logger.
+- [wait](https://tenacity.readthedocs.io/en/latest/index.html#waiting-before-retrying): Defines the waiting period between retries, in our case we use the wait_exponential to implement an exponential backoff
 
 Below we can see the code including the changes to implement this policy.
 
@@ -234,7 +234,7 @@ At this point, it is important to note that retries for an error 404 in most cas
 
 ### Do retries when needed
 
-It is important to handle erros accordinliy and part of it is to perform retry when is really needed. So if we take a look at the Slack documentation for errors and rate limits we can take the following actions regarding the status obtained on each request:
+It is important to handle errors accordingly and part of it is to perform retry only when is needed. So if we take a look at the Slack documentation for errors and rate limits we can take the following actions regarding the status obtained on each request:
 - Status 429: Retry
 - Status 4XX: Don't retry
 - Status 500: Retry
@@ -245,9 +245,9 @@ Slack documentation:
 - https://api.slack.com/docs/rate-limits#rate-limits__responding-to-rate-limiting-conditions
 
 
-To implement this we need to identify errors that need retries from those that don't require it, for this we will use tenacity *retry_if_exception_type* function along with a custom Exception *SendMsgError*. On top of that we need do some improvement to the *send_msg_slack* function in order to cover our requirements.
+To implement this we need to identify errors that need retries from those that don't require it, for this, we will use tenacity's *retry_if_exception_type* function along with a custom Exception *SendMsgError*. On top of that, we need to do some improvement to the *send_msg_slack* function to cover our requirements.
 
-Below we can see the changes on the function along the retry decorator. The comple code can be seen on the [slack_retries_v2.py](./slack_retries_v2.py) file.
+Below we can see the changes in the function along with the retry decorator. The complete code can be seen on the [slack_retries_v2.py](./slack_retries_v2.py) file.
 
 ```python
 @retry(stop=stop_after_attempt(4), before=before_log(logger, logging.DEBUG),
@@ -316,22 +316,22 @@ Force failure erro 429 mock
 RetryError[<Future at 0x103d29640 state=finished raised SendMsgError>]
 ```
 
-In comparison to the previos results we now see that we have a different behavior for error 404 and 500. In the case of 404 error we have only one call as in this case no retry is requiered. 
+In comparison to the previous results, we now see that we have different behavior for errors 404 and 500. In the case of the 404 error, we have only one call as in this case no retry is required. 
 
 We also included a test with a 429 status mock. Similar to the 500 mock we can see the retries. Even if we are doing retries for this type of error, our solution is not complete. According to Slack [documentation](https://api.slack.com/docs/rate-limits#rate-limits__responding-to-rate-limiting-conditions), 429 error response includes a header that indicates the period of backoff that we need to honor and we are not taking that info into account in our retry policy.
 
 ### Include external input into retries
 
 Slack 429 response includes the Retry-After header with the number of seconds that we need to wait to run the next request. With this in mind, the new retry policy shall:
-- Maintain the default policy backoff times for cases on wich the response does not precribe a backoff time.
-- Implment a mechanimism to read and use the backoff time provided by the API.
+- Maintain the default policy backoff times for cases in which the response does not prescribe a backoff time.
+- Implement a mechanism to read and use the backoff time provided by the API.
 - Keep the same number of retries as before.
 
 The proposed solution uses tenacity capacity for [custom callbacks](https://tenacity.readthedocs.io/en/latest/#other-custom-callbacks). For our needs we generate a function that returns the wait time as specified by the Slack Response, this function will be used on the [wait hook](https://tenacity.readthedocs.io/en/latest/#waiting-before-retrying) provided by tenacity. 
 
-We still need to solve how to pass the wait time from the *send_msg_slack* to tenacity. In tenacity, any custom callback receives as parameter the [RetryState](https://tenacity.readthedocs.io/en/latest/#retrycallstate). With the RetryState we could access the function being wrapped by the retry call and the parameters of the function. With this we tried to use [function attributes](https://www.python.org/dev/peps/pep-0232/), but unfortunatelly this aproach didn't work, so we resorted to use classes in order to pass information between tenacity and the retry function.
+We still need to solve how to pass the wait time from the *send_msg_slack* to tenacity. In tenacity, any custom callback receives as a parameter the [RetryState](https://tenacity.readthedocs.io/en/latest/#retrycallstate). With the RetryState we could access the function being wrapped by the retry call and the parameters of the function. With this, we tried to use [function attributes](https://www.python.org/dev/peps/pep-0232/), but unfortunately, this approach didn't work, so we resorted to using classes to pass information between tenacity and the retry function.
 
-The new version of the code can be found at: [slack_retries_v3.py](./slack_retries_v3.py)
+The new version of the code can be found at [slack_retries_v3.py](./slack_retries_v3.py)
 ```python
 from datetime import datetime
 from config import slack_cfg
@@ -454,7 +454,7 @@ except Exception as err:
     print(str(err))
 ````
 
-Now we will see the results of this changes:
+Now we will see the results of these changes:
 ```log
 python3 slack_retries_v3.py
 
@@ -501,14 +501,22 @@ Force failure erro 429 mock
 RetryError[<Future at 0x10b2aeeb0 state=finished raised SendMsgError>]
 ```
 
-The first two test worked as expected, the important part in this case is the difference in the times from the 500 error retries vs the times in the 429 ones.
+The first two tests worked as expected, the important part, in this case, is the difference in the times from the 500 error retries vs the times in the 429 ones.
 
 Wait times for each retry:
-| Attemp        | Err 500   | Err 429  |
+| Attempt        | Err 500   | Err 429  |
 |:-------------:| :-----:   | :---:     |
 | 2             | 1         | 3         |
 | 3             | 2         | 3         |
 | 4             | 4         | 3         |
 
-As we see in the results, now the times for 429 erros is fixed on 3 secs, which is the value returned by the 429 mock url.
+As we see in the results, now the times for 429 errors are fixed in 3 secs, which is the value returned by the 429 mock URL which is the result we wanted.
+
+# Conclusion
+
+Tenacity is a very versatile library that can easily help you implement retry policies in a non-invasive manner in your code.
+The code shown is an option to solve a common use case, but surely there would be other alternatives that better suit your needs, but we think this code snipes would help in using some useful tenacity features.
+
+Other interesting use cases on which tenacity could help is the calls to Services using libraries such as calls to AWS using boto.
+
 
