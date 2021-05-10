@@ -90,7 +90,7 @@ Force failure using a non-existing channel
 404 Client Error: Not Found for url: https://hooks.slack.com/services/my-slack-webhook
 
 Force failure erro 5XX mock
-500 Server Error: Server Error for url: http://b4d.mocklab.io/err500
+500 Server Error: Server Error for url: http://XXXXX.mocklab.io/err500
 ```
 
 We can observe that all requests worked as designed:
@@ -207,18 +207,18 @@ Force failure using a non-existing channel
 
 Force failure erro 5XX mock
 2021-05-08 21:08:10,401 :: DEBUG :: Message attepmt: 1
-2021-05-08 21:08:10,404 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:08:10,404 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:08:10,771 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 2021-05-08 21:08:11,773 :: DEBUG :: Message attepmt: 2
-2021-05-08 21:08:11,776 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:08:11,776 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:08:12,138 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 2021-05-08 21:08:13,140 :: DEBUG :: Message attepmt: 3
-2021-05-08 21:08:13,143 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:08:13,143 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:08:13,519 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 2021-05-08 21:08:14,524 :: DEBUG :: Message attepmt: 4
-2021-05-08 21:08:14,526 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:08:14,526 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:08:14,900 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
-500 Server Error: Server Error for url: http://b4d.mocklab.io/err500
+500 Server Error: Server Error for url: http://XXXXX.mocklab.io/err500
 ```
 
 There are some caveats(our humble opinion) with this approach that make it not desirable if we can use a library such as tenacity:
@@ -341,16 +341,16 @@ RetryError[<Future at 0x101c4b1f0 state=finished raised HTTPError>]
 
 Force failure erro 5XX mock
 2021-05-08 21:12:14,391 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
-2021-05-08 21:12:14,964 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:12:14,964 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:12:15,334 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 2021-05-08 21:12:16,340 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 2nd time calling it.
-2021-05-08 21:12:16,343 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:12:16,343 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:12:16,746 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 2021-05-08 21:12:18,750 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 3rd time calling it.
-2021-05-08 21:12:18,753 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:12:18,753 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:12:19,122 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 2021-05-08 21:12:23,129 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 4th time calling it.
-2021-05-08 21:12:23,132 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:12:23,132 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:12:23,510 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 RetryError[<Future at 0x101cea4f0 state=finished raised HTTPError>]
 ```
@@ -414,31 +414,31 @@ Force failure using a non-existing channel
 
 Force failure erro 5XX mock
 2021-05-08 21:17:05,602 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
-2021-05-08 21:17:05,605 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:05,605 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:17:06,069 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 2021-05-08 21:17:07,075 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 2nd time calling it.
-2021-05-08 21:17:07,078 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:07,078 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:17:07,447 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 2021-05-08 21:17:09,450 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 3rd time calling it.
-2021-05-08 21:17:09,453 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:09,453 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:17:09,920 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 2021-05-08 21:17:13,926 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 4th time calling it.
-2021-05-08 21:17:13,929 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:13,929 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:17:14,310 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 RetryError[<Future at 0x103bf5bb0 state=finished raised SendMsgError>]
 
 Force failure erro 429 mock
 2021-05-08 21:17:14,311 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 1st time calling it.
-2021-05-08 21:17:14,314 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:14,314 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:17:14,684 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
 2021-05-08 21:17:15,690 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 2nd time calling it.
-2021-05-08 21:17:15,692 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:15,692 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:17:16,057 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
 2021-05-08 21:17:18,060 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 3rd time calling it.
-2021-05-08 21:17:18,063 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:18,063 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:17:18,442 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
 2021-05-08 21:17:22,447 :: DEBUG :: Starting call to '__main__.send_msg_slack', this is the 4th time calling it.
-2021-05-08 21:17:22,450 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 21:17:22,450 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 21:17:22,824 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
 RetryError[<Future at 0x103d29640 state=finished raised SendMsgError>]
 ```
@@ -599,31 +599,31 @@ Force failure using a non-existing channel
 
 Force failure erro 5XX mock
 2021-05-08 23:15:28,659 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 1st time calling it.
-2021-05-08 23:15:29,276 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:29,276 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 23:15:29,920 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 2021-05-08 23:15:30,925 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 2nd time calling it.
-2021-05-08 23:15:30,928 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:30,928 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 23:15:31,303 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 2021-05-08 23:15:33,308 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 3rd time calling it.
-2021-05-08 23:15:33,320 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:33,320 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 23:15:33,698 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 2021-05-08 23:15:37,701 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 4th time calling it.
-2021-05-08 23:15:37,705 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:37,705 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 23:15:38,080 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err500 HTTP/1.1" 500 12
 RetryError[<Future at 0x10b188e20 state=finished raised SendMsgError>]
 
 Force failure erro 429 mock
 2021-05-08 23:15:38,081 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 1st time calling it.
-2021-05-08 23:15:38,084 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:38,084 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 23:15:38,451 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
 2021-05-08 23:15:41,453 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 2nd time calling it.
-2021-05-08 23:15:41,456 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:41,456 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 23:15:41,829 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
 2021-05-08 23:15:44,835 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 3rd time calling it.
-2021-05-08 23:15:44,837 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:44,837 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 23:15:45,221 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
 2021-05-08 23:15:48,222 :: DEBUG :: Starting call to '__main__.SlackPub.send_msg_slack', this is the 4th time calling it.
-2021-05-08 23:15:48,225 :: DEBUG :: Starting new HTTP connection (1): b4d.mocklab.io:80
+2021-05-08 23:15:48,225 :: DEBUG :: Starting new HTTP connection (1): XXXXX.mocklab.io:80
 2021-05-08 23:15:48,598 :: DEBUG :: http://XXXXX.mocklab.io:80 "POST /err429 HTTP/1.1" 429 17
 RetryError[<Future at 0x10b2aeeb0 state=finished raised SendMsgError>]
 ```
